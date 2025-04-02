@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSS News</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body class="relative text-white">
+    <div class="absolute inset-0 bg-gradient-to-b from-black via-blue-900 to-gray-900">
+        <div class="absolute inset-0 bg-stars"></div>
+    </div>
+
+    <input type="checkbox" id="sidebar-toggle" class="hidden" />
+    <div id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-gray-800 bg-opacity-90 p-5 z-10 transition-transform duration-300 ease-in-out">
+        <h2 class="text-2xl font-bold text-blue-300 mb-4">Category</h2>
+        <ul>
+            <li><a href="#" class="text-blue-400 hover:text-blue-600">Technology</a></li>
+            <li><a href="#" class="text-blue-400 hover:text-blue-600">Sport</a></li>
+            <li><a href="#" class="text-blue-400 hover:text-blue-600">Science</a></li>
+            <li><a href="#" class="text-blue-400 hover:text-blue-600">Economy</a></li>
+            <li><a href="#" class="text-blue-400 hover:text-blue-600">Culture</a></li>
+        </ul>
+    </div>
+
+    <label for="sidebar-toggle" class="absolute top-5 left-5 z-20 cursor-pointer md:hidden">
+        <div class="w-8 h-1 mb-2 bg-blue-300"></div>
+        <div class="w-8 h-1 mb-2 bg-blue-300"></div>
+        <div class="w-8 h-1 bg-blue-300"></div>
+    </label>
+
+    <div class="relative z-10 ml-1/6 max-w-4xl mx-auto py-10 pl-10">
+        <h1 class="text-4xl font-bold text-blue-400 animate-wink">
+            👀 RSS News
+        </h1>
+        <div class="mt-8 space-y-6 news-container relative">
+            {{ news }}
+        </div>
+    </div>
+
+    <div class="absolute top-0 right-10">
+        <div class="relative">
+            <img src="static/planet1.png" alt="Планета" class="w-48 animate-spin-slow">
+            <div class="absolute top-0 left-0 w-full h-full animate-orbit">
+                <img src="/static/satellite.png" alt="Супутник" class="w-8 absolute top-0 left-1/2 transform -translate-x-1/2">
+            </div>
+        </div>
+    </div>
+
+         <!-- Астронат біля 4 новини (внутрішнє позиціонування) -->
+         <div class="absolute right-10 top-80 z-10 animate-float">
+            <img src="static/austronaut.png" alt="Астронавт" class="w-16">
+    </div>
+        </div>
+
+    <div class="absolute bottom-10 right-28 z-10 animate-float-slow">
+        <img src="static/cosmicstation.png" alt="Космічна станція" class="w-60">
+    </div>
+</body>
+</html>
+ 
