@@ -1,4 +1,4 @@
-/* Фон нічного зоряного неба */
+
 .bg-stars {
     background: url("static/stars.png");
     opacity: 0.3;
@@ -13,7 +13,7 @@
     to { background-position: 1000px 1000px; }
 }
 
-/* Анімація руху супутника навколо планети */
+
 @keyframes orbit {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -23,17 +23,17 @@
     animation: orbit 15s linear infinite;
 }
 
-/* Анімація планети, що обертається навколо своєї осі */
+
 @keyframes spin-slow {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 
 .animate-spin-slow {
-    animation: spin-slow 60s linear infinite; /* 1 хвилина на повний оберт */
+    animation: spin-slow 60s linear infinite; 
 }
 
-/* Анімація астронавта, що плаває навколо */
+
 @keyframes float {
     0% {
         transform: translateY(0);
@@ -50,7 +50,6 @@
     animation: float 3s ease-in-out infinite;
 }
 
-/* Анімація космічної станції, що плаває з меншою амплітудою */
 @keyframes float-slow {
     0% {
         transform: translateY(0);
@@ -67,44 +66,43 @@
     animation: float-slow 4s ease-in-out infinite;
 }
 
-/* Блок новин без прокрутки */
+
 .news-container {
-    max-height: none; /* Вимикаємо прокрутку */
-    overflow-y: hidden; /* Вимикаємо прокручування */ 
+    max-height: none; 
+    overflow-y: hidden;  
 }
 
-/* Стиль для сайдбару */
+
 #sidebar {
     position: fixed;
     top: 0;
     left: 0;
     height: 100%;
     width: 250px;
-    background-color: rgba(31, 41, 55, 0.9); /* Темний напівпрозорий фон */
+    background-color: rgba(31, 41, 55, 0.9); 
     z-index: 20;
     padding: 20px;
-    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.6); /* Тінь для сайдбару */
-    transition: transform 0.3s ease-in-out, border-right 0.3s ease; /* Додано border-right */
-    transform: translateX(-100%); /* Сайдбар спочатку прихований */
-    border-right: 4px solid transparent; /* Початкова прозора межа */
-}
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.6); 
+    transition: transform 0.3s ease-in-out, border-right 0.3s ease;
+    transform: translateX(-100%);
+    border-right: 4px solid transparent;
 
-/* Відкритий сайдбар */
+
 #sidebar.open {
-    transform: translateX(0); /* Переміщуємо сайдбар вліво */
-    border-right: 4px solid #63b3ed; /* Синя підсвітка границі */
+    transform: translateX(0); 
+    border-right: 4px solid #63b3ed; 
 }
 
-/* Стиль для заголовка сайдбару */
+
 #sidebar h2 {
     font-size: 1.5rem;
-    color: #63b3ed; /* Блакитний колір */
+    color: #63b3ed; 
     margin-bottom: 20px;
     text-transform: uppercase;
     font-weight: bold;
 }
 
-/* Список елементів меню */
+
 #sidebar ul {
     list-style: none;
     padding-left: 0;
@@ -120,23 +118,22 @@
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Зміна кольору при наведенні */
+
 #sidebar li:hover {
-    background-color: #2b6cb0; /* Тіні для активних елементів */
+    background-color: #2b6cb0; 
     color: white;
 }
 
-/* Для великих екранів, сайдбар завжди відкритий */
 @media (min-width: 768px) {
     #sidebar {
-        transform: translateX(0); /* Для великих екранів сайдбар завжди видимий */
+        transform: translateX(0);
     }
 }
 
-/* Для мобільних пристроїв */
+
 @media (max-width: 768px) {
-    /* Сайдбар стає видимим через checkbox */
+
     #sidebar-toggle:checked + #sidebar {
-        transform: translateX(0); /* Відкритий сайдбар */
+        transform: translateX(0); 
     }
 }
