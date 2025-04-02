@@ -1,6 +1,6 @@
 /* Фон нічного зоряного неба */
 .bg-stars {
-    background: url("/static/stars.png");
+    background: url("static/stars.png");
     opacity: 0.3;
     position: absolute;
     width: 100%;
