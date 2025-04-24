@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  news_api:
+    build: ./news_api
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"  
+    depends_on:
+      - mongodb
+
+  rss_fetcher:
+    build: ./rss_fetcher
+    env_file:
+      - .env
+    depends_on:
+      - mongodb
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"  
+    depends_on:
+      - news_api
+
+volumes:
+  mongo_data:
