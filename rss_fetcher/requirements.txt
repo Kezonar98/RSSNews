@@ -1,0 +1,4 @@
+feedparser
+motor
+python-dotenv
+python-dateutil
