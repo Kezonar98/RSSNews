@@ -1,0 +1,52 @@
+/* 1. Box-sizing reset */
+*, *::before, *::after {
+    box-sizing: border-box;
+  }
+  
+  /* 2. Animations keyframes */
+  
+  /* gentle floating */
+  @keyframes float {
+    0%   { transform: translateY(0px); }
+    50%  { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+  }
+  
+  /* faster floating */
+  @keyframes floatFast {
+    0%   { transform: translateY(0px); }
+    50%  { transform: translateY(-30px); }
+    100% { transform: translateY(0px); }
+  }
+  
+  /* simple spin */
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  
+  /* moving stars background */
+  @keyframes moveStars {
+    from { background-position: 0 0; }
+    to   { background-position: 0 -500px; }
+  }
+  
+  @keyframes spinReverse {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(-360deg); }
+  }
+
+  /* 3. prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+  html, body, #root {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+  }

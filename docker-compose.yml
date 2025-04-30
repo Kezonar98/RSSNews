@@ -12,23 +12,29 @@ services:
   news_api:
     build: ./news_api
     env_file:
-      - .env
+      - ./.env
     ports:
-      - "8000:8000"  
+      - "8000:8000"
     depends_on:
       - mongodb
 
   rss_fetcher:
     build: ./rss_fetcher
     env_file:
-      - .env
+      - ./.env
     depends_on:
       - mongodb
 
   frontend:
-    build: ./frontend
+    build: ./frontend-react
+    # Load root .env into container and pass variables
+    env_file:
+      - ./.env
+    environment:
+      VITE_NEWS_API_URL: ${VITE_NEWS_API_URL}
+      VITE_CATEGORIES_API_URL: ${VITE_CATEGORIES_API_URL}
     ports:
-      - "8080:80"  
+      - "5173:5173"
     depends_on:
       - news_api
 
