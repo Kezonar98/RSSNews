@@ -71,7 +71,7 @@ export default function NewsList() {
         <VStack spacing={8}>
           {news.map(item => (
             <NewsCard
-              key={item.id}
+              id ={item.id}
               title={item.title}
               description={item.description}
               link={item.link}
