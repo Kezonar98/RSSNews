@@ -1,4 +1,8 @@
-fastapi
-uvicorn
-motor
-python-dotenv
+fastapi>=0.95.0
+uvicorn[standard]>=0.22.0
+motor>=3.1.1
+python-dotenv>=0.21.0
+# The rewriter and its deps will be added later:
+# aiohttp>=3.8.0
+# newspaper3k>=0.2.8
+# transformers>=4.0.0

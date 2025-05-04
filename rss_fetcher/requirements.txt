@@ -1,4 +1,4 @@
-feedparser
-motor
-python-dotenv
-python-dateutil
+feedparser>=6.0.0
+motor>=3.1.1
+python-dotenv>=0.21.0
+python-dateutil>=2.8.0
