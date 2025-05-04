@@ -10,7 +10,9 @@ services:
       - mongo_data:/data/db
 
   news_api:
-    build: ./news_api
+    build:
+      context: .                    # build the entire repo
+      dockerfile: news_api/Dockerfile
     env_file:
       - ./.env
     ports:
@@ -19,7 +21,9 @@ services:
       - mongodb
 
   rss_fetcher:
-    build: ./rss_fetcher
+    build:
+      context: .                    # also build from repo root
+      dockerfile: rss_fetcher/Dockerfile
     env_file:
       - ./.env
     depends_on:
@@ -27,7 +31,6 @@ services:
 
   frontend:
     build: ./frontend-react
-    # Load root .env into container and pass variables
     env_file:
       - ./.env
     environment:
