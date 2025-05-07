@@ -1,5 +1,4 @@
-
-# category_mapper.py
+#common/category_mapper.py
 
 # Mapping of raw keywords to global categories via substring matching
 GLOBAL_CATEGORY_MAPPING = {

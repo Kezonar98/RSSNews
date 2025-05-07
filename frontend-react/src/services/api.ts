@@ -1,7 +1,6 @@
-// src/services/api.ts
 import axios from 'axios';
 
-const NEWS_URL = import.meta.env.VITE_NEWS_API_URL!;
+const NEWS_URL       = import.meta.env.VITE_NEWS_API_URL!;
 const CATEGORIES_URL = import.meta.env.VITE_CATEGORIES_API_URL!;
 
 export interface NewsItem {
@@ -11,7 +10,7 @@ export interface NewsItem {
   published: string;
   source: string;
   categories: string[];
-  description: string; // у списку це може бути короткий опис чи join(categories)
+  description: string;
 }
 
 export interface NewsPage {
@@ -19,14 +18,11 @@ export interface NewsPage {
   totalPages: number;
 }
 
-/**
- * FullNewsItem represents a single article with rewritten content.
- */
 export interface FullNewsItem {
   id: string;
   title: string;
   rewritten_title: string;
-  content_rewritten: string;
+  rewritten_body: string;
   published: string;
   source: string;
   categories: string[];
@@ -34,10 +30,6 @@ export interface FullNewsItem {
 
 /**
  * Fetch a single page of news for listing.
- *
- * @param page     - page number (1-based)
- * @param perPage  - number of items per page
- * @param category - optional category filter
  */
 export async function fetchNews(
   page = 1,
@@ -60,10 +52,14 @@ export async function fetchCategories(): Promise<string[]> {
 
 /**
  * Fetch a single rewritten news article by ID.
- *
- * @param id - the article's unique identifier
+ * This will check for the rewritten title and body from the backend.
  */
 export async function fetchNewsById(id: string): Promise<FullNewsItem> {
-  const res = await axios.get<FullNewsItem>(`${NEWS_URL}/${id}`);
-  return res.data;
+  try {
+    const res = await axios.get<FullNewsItem>(`${NEWS_URL}/${id}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching news by ID:", error);
+    throw new Error("Error fetching news by ID");
+  }
 }
