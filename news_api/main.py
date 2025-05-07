@@ -1,56 +1,55 @@
 # news_api/main.py
 import os
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from db import get_latest_news, get_all_categories
 from dotenv import load_dotenv
+
+from db import get_news_item, get_latest_news, get_all_categories
+from common.ai_rewriter import rewrite_or_get_cached
 
 load_dotenv()
 
-app = FastAPI(
-    title="Cosmic News API",
-    description="Provides the latest news with optional category filtering",
-    version="1.0.0",
-)
+app = FastAPI(title="Cosmic News API", version="1.0.0")
 
-# CORS setup
 origins = [
-    o.strip() 
-    for o in os.getenv("CORS_ORIGINS", "*").split(",") 
+    o.strip()
+    for o in os.getenv("CORS_ORIGINS", "*").split(",")
     if o.strip()
 ] or ["*"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"], #Test! Later change to origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-DEFAULT_LIMIT = int(os.getenv("DEFAULT_LIMIT", "5"))
 
+@app.get("/news/{item_id}", tags=["News"])
+async def news_item_endpoint(item_id: str):
+    item = await get_news_item(item_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
 
-@app.get("/", tags=["Root"])
-async def root():
-    return {"message": "API is up. Use /news and /categories."}
+    rewritten_title, rewritten_body = await rewrite_or_get_cached(
+        item_id, item["title"], item["link"]
+    )
 
-
-@app.get("/categories", tags=["Categories"])
-async def categories_endpoint():
-    try:
-        return await get_all_categories()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching categories: {e}")
+    item["rewritten_title"] = rewritten_title
+    item["rewritten_body"] = rewritten_body
+    return item
 
 
 @app.get("/news", tags=["News"])
-async def news_endpoint(
+async def list_news(
     page: int = Query(1, ge=1),
-    limit: int = Query(DEFAULT_LIMIT, ge=1),
-    category: str | None = Query(None),
+    limit: int = Query(10, ge=1, le=100),
+    category: str | None = None
 ):
-    try:
-        return await get_latest_news(limit=limit, category=category, page=page)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching news: {e}")
+    return await get_latest_news(limit=limit, category=category, page=page)
+
+
+@app.get("/categories", tags=["Categories"])
+async def list_categories():
+    return await get_all_categories()

@@ -1,11 +1,14 @@
-# rss_fetcher/rss_parser.py
 import os
+import asyncio
 from datetime import datetime, timezone
+
 import feedparser
 from dateutil import parser as date_parser
-from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
+from motor.motor_asyncio import AsyncIOMotorClient
+
 from common.category_mapper import map_to_global_categories
+from common.ai_rewriter import rewrite_or_get_cached
 
 load_dotenv()
 
@@ -22,15 +25,12 @@ NEWS_LIMIT      = int(os.getenv("NEWS_LIMIT", "1000"))
 client     = AsyncIOMotorClient(MONGO_URI)
 collection = client[DB_NAME][COLLECTION_NAME]
 
+
 async def init_db():
-    """Create a unique index on 'link' to avoid duplicates."""
     await collection.create_index("link", unique=True)
 
+
 async def fetch_rss():
-    """
-    Fetch RSS entries, parse, extract categories via shared mapper,
-    and upsert into MongoDB.
-    """
     print("🔄 Starting RSS fetch...")
     for url in RSS_FEEDS:
         print(f"📡 Parsing feed: {url}")
@@ -41,21 +41,24 @@ async def fetch_rss():
 
         for entry in feed.entries:
             title = entry.get("title", "").strip()
-            link = entry.get("link", "").strip()
+            link  = entry.get("link", "").strip()
             print(f"🔍 Entry: {title}")
 
-            # Parse publication date
             try:
                 pub_date = date_parser.parse(entry.published)
                 if pub_date.tzinfo is None:
                     pub_date = pub_date.replace(tzinfo=timezone.utc)
-            except Exception as e:
-                print(f"⚠️ Error parsing date: {e}")
+            except Exception:
                 pub_date = datetime.now(timezone.utc)
 
-            # Map categories using shared mapper
-            raw_terms = [tag.get("term", "") for tag in entry.get("tags", [])]
+            raw_terms  = [tag.get("term", "") for tag in entry.get("tags", [])]
             categories = map_to_global_categories(raw_terms)
+
+            try:
+                rewritten_title, rewritten_body = await rewrite_or_get_cached(link, title, link)
+            except Exception as e:
+                print(f"❌ [REWRITER] Failed to rewrite '{title}': {e}")
+                rewritten_title, rewritten_body = title, ""
 
             news_item = {
                 "title": title,
@@ -64,26 +67,17 @@ async def fetch_rss():
                 "source": url,
                 "categories": categories,
                 "created_at": datetime.now(timezone.utc),
+                "rewritten_title": rewritten_title,
+                "rewritten_body": rewritten_body,
             }
 
-            # Upsert into MongoDB
             try:
-                result = await collection.update_one(
+                res = await collection.update_one(
                     {"link": link},
                     {"$set": news_item},
                     upsert=True
                 )
-                if result.matched_count:
-                    print(f"🔄 Updated: {title}")
-                elif result.upserted_id:
-                    print(f"✅ Inserted: {title}")
+                action = "Updated" if res.matched_count else "Inserted"
+                print(f"🔄 {action}: {title}")
             except Exception as e:
                 print(f"❌ Upsert error for '{title}': {e}")
-
-async def get_news():
-    """
-    Retrieve latest news documents sorted by published date descending.
-    Primarily for local testing.
-    """
-    cursor = collection.find().sort("published", -1).limit(NEWS_LIMIT)
-    return await cursor.to_list(length=NEWS_LIMIT)

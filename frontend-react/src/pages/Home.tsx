@@ -21,14 +21,12 @@ import { usePagination } from '../hooks/usePagination';
 const ITEMS_PER_PAGE = 10;
 
 export default function Home() {
-  // state for all fetched news, category filter and search query
   const [allNewsItems, setAllNewsItems] = useState<NewsItem[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
-  // fetch all categories on mount
   useEffect(() => {
     (async () => {
       try {
@@ -40,7 +38,6 @@ export default function Home() {
     })();
   }, []);
 
-  // fetch all news for selected category (all pages)
   useEffect(() => {
     (async () => {
       let page = 1;
@@ -67,43 +64,43 @@ export default function Home() {
     })();
   }, [selectedCategory]);
 
-  // handle category click
   const handleCategoryClick = (cat: string) => {
     setSelectedCategory(prev => (prev === cat ? undefined : cat));
-    setSearchQuery('');            // reset search when category changes
+    setSearchQuery('');
   };
 
-  // handle search input
   const handleSearch = (q: string) => {
     setSearchQuery(q);
     setCurrentPage(1);
   };
 
-  // filter news by search query
-  const filteredNews = useMemo(() => {
-    if (!searchQuery) return allNewsItems;
-    const q = searchQuery.toLowerCase();
-    return allNewsItems.filter(item => {
-      const title = item.title ?? '';
-      const desc = item.description ?? '';
-      return title.toLowerCase().includes(q) ||
-             desc.toLowerCase().includes(q);
-    });
-  }, [allNewsItems, searchQuery]);
+  const validNewsItems = useMemo(() => {
+    return allNewsItems.filter(item =>
+      !!item.title &&
+      Array.isArray(item.categories)
+    );
+  }, [allNewsItems]);
 
-  // pagination logic
+  const searchedNews = useMemo(() => {
+    if (!searchQuery) return validNewsItems;
+    const q = searchQuery.toLowerCase();
+    return validNewsItems.filter(item => {
+      const title = item.title.toLowerCase();
+      const desc = (item.description ?? '').toLowerCase();
+      return title.includes(q) || desc.includes(q);
+    });
+  }, [validNewsItems, searchQuery]);
+
   const { totalPages, paginatedItems, pageWindow } = usePagination(
-    filteredNews,
+    searchedNews,
     currentPage,
     ITEMS_PER_PAGE
   );
 
   return (
     <Box pos="relative" w="100%" minH="100vh">
-      {/* Background decorations */}
       <BackgroundDecorations />
 
-      {/* Search and Home buttons */}
       <Box pos="absolute" top="20px" right="20px" zIndex={2}>
         <HStack spacing={2}>
           <SearchBar onSearch={handleSearch} />
@@ -130,7 +127,6 @@ export default function Home() {
       <Container centerContent pt={24} zIndex={1}>
         <Header />
 
-        {/* Category buttons */}
         <HStack spacing={2} wrap="nowrap" overflowX="auto" mb={4}>
           {categories.map(cat => (
             <Button
@@ -158,7 +154,6 @@ export default function Home() {
           Latest News {selectedCategory && `(Category: ${selectedCategory})`}
         </Heading>
 
-        {/* News list */}
         <Stack spacing={6} w="100%" align="center" mb={6}>
           {paginatedItems.length > 0 ? (
             paginatedItems.map(item => (
@@ -171,13 +166,10 @@ export default function Home() {
               />
             ))
           ) : (
-            <Text color="gray.300">
-              No results for "{searchQuery}"
-            </Text>
+            <Text color="gray.300">No results for "{searchQuery}"</Text>
           )}
         </Stack>
 
-        {/* Pagination controls */}
         <HStack spacing={2} justify="center">
           <Button size="sm" onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
             1

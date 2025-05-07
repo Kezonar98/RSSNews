@@ -38,15 +38,16 @@ export default function BackgroundDecorations() {
     <>
       {/* Background Stars */}
       <Box
-         pos="fixed"
-         inset={0}  
-         w="100%"
-         backgroundImage={`url(${stars})`}
-         backgroundRepeat="repeat"
-         backgroundSize="contain"
-         sx={{ animation: `${moveStars} 30s linear infinite` }}
-         zIndex={-2}
-       />
+        pos="absolute"
+       inset={0}
+       w="100%"
+      backgroundImage={`url(${stars})`}
+      backgroundRepeat="repeat"
+      backgroundSize="contain"
+      sx={{ animation: `${moveStars} 30s linear infinite` }}
+     zIndex={-1}
+        />
+
 
       {/* Planet with orbiting satellite */}
       <Box

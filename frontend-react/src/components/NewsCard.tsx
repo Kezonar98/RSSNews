@@ -1,16 +1,18 @@
-import { Box, Heading, Text, Link } from '@chakra-ui/react';
+// src/components/NewsCard.tsx
+import { Box, Heading, Text } from '@chakra-ui/react';
+import { Link as RouterLink } from 'react-router-dom';
 
 interface NewsCardProps {
+  id: string;
   title: string;
   description: string;
   link: string;
-  id: string;
 }
 
-export default function NewsCard({ title, description, link }: NewsCardProps) {
+export default function NewsCard({ id, title, description }: NewsCardProps) {
   return (
     <Box
-      w={{ base: '95vw', md: '800px', lg: '1000px' }} // зберігаємо розмір
+      w={{ base: '95vw', md: '800px', lg: '1000px' }}
       p={6}
       minH="140px"
       shadow="xl"
@@ -26,9 +28,9 @@ export default function NewsCard({ title, description, link }: NewsCardProps) {
       <Text mb={4} color="gray.200" noOfLines={3}>
         {description}
       </Text>
-      <Link href={link} color="#B28BFF" isExternal fontWeight="bold">
+      <RouterLink to={`/article/${id}`} style={{ fontWeight: 'bold', color: '#B28BFF' }}>
         Read more →
-      </Link>
+      </RouterLink>
     </Box>
   );
 }

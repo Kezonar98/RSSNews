@@ -1,8 +1,10 @@
 # news_api/db.py
+
 import os
 import re
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
+from bson import ObjectId
 from common.category_mapper import map_to_global_categories, GLOBAL_CATEGORY_MAPPING
 
 load_dotenv()
@@ -17,43 +19,32 @@ collection = client[DB_NAME][COLLECTION_NAME]
 
 
 async def get_all_categories() -> list[str]:
-    """
-    Return list of global categories actually used in the collection,
-    in the order defined by GLOBAL_CATEGORY_MAPPING keys.
-    """
+    """Return list of global categories actually used in the collection."""
     raw_cats = await collection.distinct("categories")
-    return map_to_global_categories(raw_cats)
+    # Map each raw category to global ones, dedupe, keep order
+    mapped = map_to_global_categories(raw_cats)
+    return mapped
 
 
-async def get_latest_news(
-    limit: int | None = None,
-    category: str | None = None,
-    page: int = 1
-) -> dict[str, object]:
+async def get_latest_news(limit: int | None = None, category: str | None = None, page: int = 1) -> dict:
     """
     Fetch paginated news items, optionally filtered by a global category.
-    Returns a dict with 'items' and 'totalPages'.
+    Returns dict with 'items' and 'totalPages'.
     """
     limit = limit or DEFAULT_LIMIT
-    skip = (page - 1) * limit
+    skip  = (page - 1) * limit
 
-    filter_q: dict = {}
+    filter_q = {}
     if category:
-        # Build a regex filter based on the shared GLOBAL_CATEGORY_MAPPING
         keywords = GLOBAL_CATEGORY_MAPPING.get(category, [])
-        pattern = "|".join(re.escape(kw) for kw in keywords)
+        pattern  = "|".join(re.escape(kw) for kw in keywords)
         filter_q["categories"] = {"$elemMatch": {"$regex": pattern, "$options": "i"}}
 
     total = await collection.count_documents(filter_q)
     total_pages = (total + limit - 1) // limit
 
-    cursor = (
-        collection.find(filter_q)
-        .sort("published", -1)
-        .skip(skip)
-        .limit(limit)
-    )
-    docs = await cursor.to_list(length=limit)
+    cursor = collection.find(filter_q).sort("published", -1).skip(skip).limit(limit)
+    docs   = await cursor.to_list(length=limit)
 
     items = []
     for d in docs:
@@ -62,3 +53,16 @@ async def get_latest_news(
         items.append(d)
 
     return {"items": items, "totalPages": total_pages}
+
+
+async def get_news_item(item_id: str) -> dict | None:
+    """Fetch a single news document by its ObjectId string."""
+    try:
+        doc = await collection.find_one({"_id": ObjectId(item_id)})
+    except Exception:
+        return None
+    if not doc:
+        return None
+    doc["id"] = str(doc["_id"])
+    doc.pop("_id", None)
+    return doc
