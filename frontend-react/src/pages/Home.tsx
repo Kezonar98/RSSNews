@@ -1,5 +1,6 @@
 // src/pages/Home.tsx
 import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -8,23 +9,22 @@ import {
   HStack,
   Button,
   Text,
-  IconButton,
 } from '@chakra-ui/react';
-import { AiFillHome } from 'react-icons/ai';
 import Header from '../components/Header';
-import SearchBar from '../components/SearchBar';
 import NewsCard from '../components/NewsCard';
-import BackgroundDecorations from '../components/BackgroundDecorations';
 import { fetchNews, fetchCategories, NewsItem } from '../services/api';
 import { usePagination } from '../hooks/usePagination';
+import Layout from '../components/Layout';
 
 const ITEMS_PER_PAGE = 10;
 
 export default function Home() {
+  const [searchParams] = useSearchParams();
+  const initialSearch = searchParams.get('search') ?? '';
   const [allNewsItems, setAllNewsItems] = useState<NewsItem[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -64,67 +64,43 @@ export default function Home() {
     })();
   }, [selectedCategory]);
 
-  const handleCategoryClick = (cat: string) => {
-    setSelectedCategory(prev => (prev === cat ? undefined : cat));
-    setSearchQuery('');
-  };
-
   const handleSearch = (q: string) => {
     setSearchQuery(q);
     setCurrentPage(1);
   };
 
-  const validNewsItems = useMemo(() => {
-    return allNewsItems.filter(item =>
-      !!item.title &&
-      Array.isArray(item.categories)
-    );
-  }, [allNewsItems]);
+  const handleCategoryClick = (cat: string) => {
+    setSelectedCategory(prev => (prev === cat ? undefined : cat));
+    setSearchQuery('');
+    setCurrentPage(1);
+  };
 
-  const searchedNews = useMemo(() => {
-    if (!searchQuery) return validNewsItems;
+  const filteredNews = useMemo(() => {
+    if (!searchQuery) return allNewsItems;
     const q = searchQuery.toLowerCase();
-    return validNewsItems.filter(item => {
-      const title = item.title.toLowerCase();
-      const desc = (item.description ?? '').toLowerCase();
-      return title.includes(q) || desc.includes(q);
+    return allNewsItems.filter(item => {
+      const title = item.title ?? '';
+      const desc = item.description ?? '';
+      return (
+        title.toLowerCase().includes(q) ||
+        desc.toLowerCase().includes(q)
+      );
     });
-  }, [validNewsItems, searchQuery]);
+  }, [allNewsItems, searchQuery]);
 
   const { totalPages, paginatedItems, pageWindow } = usePagination(
-    searchedNews,
+    filteredNews,
     currentPage,
     ITEMS_PER_PAGE
   );
 
+  const displayedItems = paginatedItems.filter(
+    item => item.id && item.title && Array.isArray(item.categories)
+  );
+
   return (
-    <Box pos="relative" w="100%" minH="100vh">
-      <BackgroundDecorations />
-
-      <Box pos="absolute" top="20px" right="20px" zIndex={2}>
-        <HStack spacing={2}>
-          <SearchBar onSearch={handleSearch} />
-          <IconButton
-            aria-label="Home"
-            icon={<AiFillHome />}
-            onClick={() => {
-              setSearchQuery('');
-              setSelectedCategory(undefined);
-              setCurrentPage(1);
-            }}
-            size="md"
-            bg="purple.600"
-            color="white"
-            _hover={{
-              bg: 'purple.700',
-              boxShadow: '0 0 10px rgba(138,43,226,0.8)',
-            }}
-            borderRadius="full"
-          />
-        </HStack>
-      </Box>
-
-      <Container centerContent pt={24} zIndex={1}>
+    <Layout onSearch={handleSearch}>
+      <Container centerContent pt={24} minH="100vh" zIndex={1}>
         <Header />
 
         <HStack spacing={2} wrap="nowrap" overflowX="auto" mb={4}>
@@ -155,14 +131,14 @@ export default function Home() {
         </Heading>
 
         <Stack spacing={6} w="100%" align="center" mb={6}>
-          {paginatedItems.length > 0 ? (
-            paginatedItems.map(item => (
+          {displayedItems.length > 0 ? (
+            displayedItems.map(item => (
               <NewsCard
                 key={item.id}
-                title={item.title}
                 id={item.id}
+                title={item.title}
                 description={item.categories.join(', ')}
-                link={item.link}
+                {...(item.is_rewritten && { link: `/article/${item.id}` })}
               />
             ))
           ) : (
@@ -186,8 +162,9 @@ export default function Home() {
               {p}
             </Button>
           ))}
-          {pageWindow.length > 0 && (pageWindow[pageWindow.length - 1] < totalPages - 1) && (
-            <Text color="white">…</Text>
+          {pageWindow.length > 0 &&
+            pageWindow[pageWindow.length - 1] < totalPages - 1 && (
+              <Text color="white">…</Text>
           )}
           <Button
             size="sm"
@@ -198,6 +175,6 @@ export default function Home() {
           </Button>
         </HStack>
       </Container>
-    </Box>
+    </Layout>
   );
 }

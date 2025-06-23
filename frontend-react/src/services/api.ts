@@ -11,6 +11,7 @@ export interface NewsItem {
   source: string;
   categories: string[];
   description: string;
+  is_rewritten?: boolean;
 }
 
 export interface NewsPage {

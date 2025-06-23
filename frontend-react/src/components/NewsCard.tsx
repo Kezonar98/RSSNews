@@ -6,7 +6,7 @@ interface NewsCardProps {
   id: string;
   title: string;
   description: string;
-  link: string;
+  link?: string;   
 }
 
 export default function NewsCard({ id, title, description }: NewsCardProps) {
