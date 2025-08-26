@@ -2,7 +2,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
-  Box,
   Container,
   Heading,
   Stack,
@@ -15,6 +14,7 @@ import NewsCard from '../components/NewsCard';
 import { fetchNews, fetchCategories, NewsItem } from '../services/api';
 import { usePagination } from '../hooks/usePagination';
 import Layout from '../components/Layout';
+import { SEO } from '../components/SEO';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -100,6 +100,13 @@ export default function Home() {
 
   return (
     <Layout onSearch={handleSearch}>
+      {/* General SEO meta tags for homepage */}
+      <SEO
+        title="Cosmic News – AI-powered Space RSS Aggregator"
+        description="Read the latest AI-rewritten space and cosmic news collected from multiple RSS sources in one place."
+        url="https://cosmic-news.example.com/"
+      />
+
       <Container centerContent pt={24} minH="100vh" zIndex={1}>
         <Header />
 

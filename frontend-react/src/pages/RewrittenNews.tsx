@@ -12,13 +12,13 @@ import {
 } from '@chakra-ui/react';
 import { fetchNewsById } from '../services/api';
 import Layout from '../components/Layout';
-import BackgroundDecorations from '../components/BackgroundDecorations';
+import { SEO } from '../components/SEO';
 
 export default function RewrittenNews() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  // Ширина обгортки: від 100% на мобільних до 70% на великих екранах
+  // Responsive wrapper width
   const wrapperMaxW = useBreakpointValue({
     base: '100%',
     md: '85%',
@@ -66,17 +66,58 @@ export default function RewrittenNews() {
   }
 
   const title = item.rewritten_title?.trim() || item.title;
-  const body = item.rewritten_body?.trim() || item.description || 'No content available.';
+  const body =
+    item.rewritten_body?.trim() || item.description || 'No content available.';
   const published = new Date(item.published).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
 
+  const url = `https://cosmic-news.example.com/article/${id}`;
+  const description =
+    item.summary ||
+    body.split('. ').slice(0, 2).join('. ') ||
+    'AI-powered rewritten space news.';
+
   return (
     <Layout onSearch={handleSearch}>
-      <BackgroundDecorations />
+      {/* Dynamic SEO meta tags */}
+      <SEO
+        title={`${title} – Cosmic News`}
+        description={description}
+        url={url}
+        image={item.imageUrl}
+      />
 
+      {/* Structured data for SEO */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'NewsArticle',
+          headline: title,
+          description: description,
+          datePublished: item.published,
+          dateModified: item.updated || item.published,
+          author: {
+            '@type': 'Organization',
+            name: 'Cosmic News AI',
+          },
+          publisher: {
+            '@type': 'Organization',
+            name: 'Cosmic News',
+            logo: {
+              '@type': 'ImageObject',
+              url: 'https://cosmic-news.example.com/logo.png',
+            },
+          },
+          mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': url,
+          },
+          image: [item.imageUrl],
+        })}
+      </script>
       <Container
         pt={24}
         pb={16}
@@ -84,7 +125,7 @@ export default function RewrittenNews() {
         maxW="container.xl"
         px={{ base: 4, md: 6, lg: 8 }}
       >
-        {/* Заголовок */}
+        {/* Article heading */}
         <Stack spacing={2} mb={8} textAlign="center">
           <Heading size="2xl" color="white">
             {title}
@@ -94,7 +135,7 @@ export default function RewrittenNews() {
           </Text>
         </Stack>
 
-        {/* Основна «картка» статті */}
+        {/* Article content */}
         <Box
           bg="rgba(0, 0, 20, 0.6)"
           border="2px solid transparent"
@@ -103,7 +144,7 @@ export default function RewrittenNews() {
           p={{ base: 8, md: 12 }}
           w="100%"
           maxW={wrapperMaxW}
-          mx="auto"   /* Центруємо */
+          mx="auto"
           sx={{
             borderImageSlice: 1,
             borderImageSource: 'linear-gradient(to right, #7F00FF, #E100FF)',

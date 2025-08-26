@@ -1,0 +1,16 @@
+FROM python:3.10
+
+# 🛠 system packages for newspaper3k, llama-cpp-python
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      build-essential cmake git \
+      libxml2-dev libxslt1-dev libjpeg-dev zlib1g-dev libgomp1 \
+      gcc libffi-dev libopenblas-dev \
+    && pip install --upgrade pip wheel setuptools \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# requirements.txt лежить у корені
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt

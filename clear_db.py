@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
 import asyncio

@@ -22,6 +22,21 @@ services:
     volumes:
       - /home/godfreynotsmart/llama.cpp/models:/models:ro
 
+  moderation_service:
+    build:
+      context: .
+      dockerfile: moderation_service/DockerFile
+    env_file:
+      - ./.env
+    ports:
+      - "8002:8002"
+    depends_on:
+      - mongodb
+    # Mount local torch/detoxify cache so Detoxify doesn't download checkpoints at runtime
+    volumes:
+    - /home/godfreynotsmart/.cache/torch/hub/checkpoints:/root/.cache/torch/hub/checkpoints
+
+
   rss_fetcher:
     build:
       context: .
@@ -30,6 +45,10 @@ services:
       - ./.env
     depends_on:
       - mongodb
+      - moderation_service
+    environment:
+      # the rss_fetcher will call this URL to clean titles
+      MODERATION_SERVICE_URL: "http://moderation_service:8002/moderate/title"
     volumes:
       - /home/godfreynotsmart/llama.cpp/models:/models:ro
 

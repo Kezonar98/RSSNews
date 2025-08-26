@@ -1,0 +1,47 @@
+# === Core dependencies for running AI moderation agents ===
+
+# Deep learning framework
+torch==2.8.0               # Required for models
+accelerate==1.10.0         # For optimized inference with HuggingFace
+
+# HuggingFace ecosystem
+transformers==4.55.2       # NLP models (toxicity, classification, etc.)
+sentencepiece==0.2.1       # Required for some HuggingFace models
+safetensors==0.6.2         # Faster and safer model loading
+
+# Toxicity / hate speech detection
+detoxify==0.5.2            # Pre-trained toxicity classification model
+
+# NSFW / adult content detection
+opencv-python==4.10.0.84   # Image preprocessing
+pillow==10.4.0             # Image loading
+onnxruntime==1.19.2        # Running ONNX NSFW detection models
+
+# Text quality and deduplication
+scikit-learn==1.5.2        # For similarity checks (TF-IDF, cosine similarity)
+numpy==1.26.4        # Numerical operations
+regex==2025.7.34           # Advanced text cleaning
+
+# Grammar / style correction
+language-tool-python==2.7.3   # Grammar checking via LanguageTool
+
+# Utilities
+tqdm==4.67.1               # Progress bars for debugging large batch checks
+psutil==7.0.0              # System monitoring
+requests==2.32.5           # API calls (if external moderation APIs are used)
+
+
+
+# Additional dependencies for RSS fetching and processing
+feedparser>=6.0.0
+motor>=3.1.1
+python-dotenv>=0.21.0
+python-dateutil>=2.8.0
+aiohttp>=3.8.0
+newspaper3k>=0.2.8
+llama-cpp-python>=0.2.65  # bump to support GGUF
+lxml[html_clean]>=4.9.3
+fastapi>=0.95.0
+uvicorn[standard]>=0.22.0
+pydantic>=2.0
+httpx>=0.24.0

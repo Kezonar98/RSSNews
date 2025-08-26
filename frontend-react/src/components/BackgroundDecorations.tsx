@@ -10,7 +10,7 @@ import astronaut from '../assets/austronaut.png';
 
 const MotionBox = motion(Box);
 
-// Define animations here
+// Background animations
 const moveStars = keyframes`
   from { background-position: 0 0; }
   to   { background-position: 0 -500px; }
@@ -35,19 +35,16 @@ const floatFast = keyframes`
 
 export default function BackgroundDecorations() {
   return (
-    <>
-      {/* Background Stars */}
+    <Box pos="fixed" inset={0} w="100%" h="100%" zIndex={-1} overflow="hidden">
+      {/* Stars background */}
       <Box
         pos="absolute"
-       inset={0}
-       w="100%"
-      backgroundImage={`url(${stars})`}
-      backgroundRepeat="repeat"
-      backgroundSize="contain"
-      sx={{ animation: `${moveStars} 30s linear infinite` }}
-     zIndex={-1}
-        />
-
+        inset={0}
+        backgroundImage={`url(${stars})`}
+        backgroundRepeat="repeat"
+        backgroundSize="contain"
+        sx={{ animation: `${moveStars} 30s linear infinite` }}
+      />
 
       {/* Planet with orbiting satellite */}
       <Box
@@ -104,6 +101,6 @@ export default function BackgroundDecorations() {
         boxSize="80px"
         sx={{ animation: `${floatFast} 4s ease-in-out infinite` }}
       />
-    </>
+    </Box>
   );
 }
