@@ -1,0 +1,34 @@
+# Node / Frontend
+frontend-react/node_modules/
+frontend-react/dist/
+frontend-react/build/
+*.log
+npm-debug.log*
+
+# Python / Backend / moderation_service
+moderation_service/venv/
+moderation_service/__pycache__/
+moderation_service/*.pyc
+moderation_service/*.pyo
+moderation_service/*.pyd
+
+# Big AI Models
+moderation_service/models/
+*.pt
+*.bin
+*.h5
+*.ckpt
+
+# Orchestrated AI agents / temp
+moderation_service/agents/
+moderation_service/*.tmp
+moderation_service/*.cache
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
+
+# Docker
+*.env
+docker-compose.override.yml
