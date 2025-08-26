@@ -32,3 +32,7 @@ moderation_service/*.cache
 # Docker
 *.env
 docker-compose.override.yml
+moderation_service/venv/
+moderation_service/models/
+moderation_service/agents/
+frontend-react/node_modules/
