@@ -1,38 +1,46 @@
-# Node / Frontend
+# --- Node / Frontend ---
 frontend-react/node_modules/
 frontend-react/dist/
 frontend-react/build/
+frontend-react/.vite/
+frontend-react/.cache/
 *.log
 npm-debug.log*
 
-# Python / Backend / moderation_service
-moderation_service/venv/
-moderation_service/__pycache__/
-moderation_service/*.pyc
-moderation_service/*.pyo
-moderation_service/*.pyd
+# --- Python / Backend / Services ---
+# Virtual environments
+venv/
+.venv/
+*/venv/
+*/.venv/
 
-# Big AI Models
-moderation_service/models/
+# Byte-compiled / cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Models / large AI files
 *.pt
 *.bin
 *.h5
 *.ckpt
+moderation_service/models/
 
-# Orchestrated AI agents / temp
+# Temp files for agents
 moderation_service/agents/
-moderation_service/*.tmp
-moderation_service/*.cache
+*.tmp
+*.cache
 
-# OS / IDE
+# --- Docker ---
+*.env
+*.pid
+*.seed
+*.tar
+*.img
+
+# --- IDE / OS ---
 .DS_Store
 .vscode/
 .idea/
-
-# Docker
-*.env
-docker-compose.override.yml
-moderation_service/venv/
-moderation_service/models/
-moderation_service/agents/
-frontend-react/node_modules/
+*.swp

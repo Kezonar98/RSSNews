@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import logging
 
-from db import get_news_item, get_latest_news, get_all_categories
+from db import get_news_item, get_latest_news, get_all_categories, get_news_by_slug
 
 load_dotenv()
 
@@ -29,6 +29,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# How many items to fetch from DB to then filter/repaginate on the API side.
+# Set high enough to include most recent rewritten items.
+NEWS_FETCH_LIMIT = int(os.getenv("NEWS_FETCH_LIMIT", "1000"))
+
 
 @app.get("/news/{item_id}", tags=["News"])
 async def news_item_endpoint(item_id: str):
@@ -48,6 +52,20 @@ async def news_item_endpoint(item_id: str):
     return item
 
 
+@app.get("/news/slug/{slug}", tags=["News"])
+async def news_item_by_slug(slug: str):
+    """
+    Return a single news item by slug (SEO-friendly URL).
+    This endpoint will deliver the same normalized shape as /news/{id}.
+    """
+    item = await get_news_by_slug(slug)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    if not item.get("is_rewritten"):
+        raise HTTPException(status_code=404, detail="Rewritten version not available")
+    return item
+
+
 @app.get("/news", tags=["News"])
 async def list_news(
     page: int = Query(1, ge=1),
@@ -56,11 +74,12 @@ async def list_news(
 ):
     """
     Return paginated list of news that are already rewritten.
-    We call get_latest_news() (existing DB helper), then filter items that have is_rewritten=True.
-    Pagination is recalculated from the filtered set to guarantee consistent client pages.
+    We request a larger chunk from DB (NEWS_FETCH_LIMIT), then filter by is_rewritten=True
+    and recalculate pagination on the filtered set to ensure consistent client pages.
     """
-    raw = await get_latest_news(limit=limit, category=category, page=1)  # request page 1 to get the full chunk
-    # raw can be either a dict {items, totalPages,...} or a list. Handle both cases defensively.
+    # Fetch a large recent chunk so filtering won't accidentally empty pages
+    raw = await get_latest_news(limit=NEWS_FETCH_LIMIT, category=category, page=1)
+
     items = []
     if isinstance(raw, dict) and "items" in raw:
         items = raw["items"]

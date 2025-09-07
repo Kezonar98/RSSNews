@@ -25,7 +25,7 @@ services:
   moderation_service:
     build:
       context: .
-      dockerfile: moderation_service/DockerFile
+      dockerfile: moderation_service/Dockerfile
     env_file:
       - ./.env
     ports:
@@ -35,7 +35,7 @@ services:
     # Mount local torch/detoxify cache so Detoxify doesn't download checkpoints at runtime
     volumes:
     - /home/godfreynotsmart/.cache/torch/hub/checkpoints:/root/.cache/torch/hub/checkpoints
-
+    
 
   rss_fetcher:
     build:
@@ -48,7 +48,7 @@ services:
       - moderation_service
     environment:
       # the rss_fetcher will call this URL to clean titles
-      MODERATION_SERVICE_URL: "http://moderation_service:8002/moderate/title"
+      MODERATION_SERVICE_URL: "http://moderation_service:8002"
     volumes:
       - /home/godfreynotsmart/llama.cpp/models:/models:ro
 

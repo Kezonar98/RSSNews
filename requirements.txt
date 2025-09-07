@@ -19,7 +19,7 @@ onnxruntime==1.19.2        # Running ONNX NSFW detection models
 
 # Text quality and deduplication
 scikit-learn==1.5.2        # For similarity checks (TF-IDF, cosine similarity)
-numpy==1.26.4        # Numerical operations
+numpy==1.26.4              # Numerical operations
 regex==2025.7.34           # Advanced text cleaning
 
 # Grammar / style correction
@@ -30,16 +30,24 @@ tqdm==4.67.1               # Progress bars for debugging large batch checks
 psutil==7.0.0              # System monitoring
 requests==2.32.5           # API calls (if external moderation APIs are used)
 
+# === LangChain integration ===
+langchain==0.2.16
+langchain-core==0.2.38
+langchain-community==0.2.11
+langchain-experimental==0.0.62
 
+# If you want LLM integrations (choose as needed):
+openai==1.40.6             # For OpenAI API (ChatGPT models)
+huggingface_hub>=0.23.0    # For HuggingFace models
+llama-cpp-python>=0.2.65   # For local LLaMA / GGUF models
 
-# Additional dependencies for RSS fetching and processing
+# === Additional dependencies for RSS fetching and processing ===
 feedparser>=6.0.0
 motor>=3.1.1
 python-dotenv>=0.21.0
 python-dateutil>=2.8.0
 aiohttp>=3.8.0
 newspaper3k>=0.2.8
-llama-cpp-python>=0.2.65  # bump to support GGUF
 lxml[html_clean]>=4.9.3
 fastapi>=0.95.0
 uvicorn[standard]>=0.22.0

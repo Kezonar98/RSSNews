@@ -1,0 +1,13 @@
+FROM cosmicrssnews-base:latest
+
+WORKDIR /app
+
+# Copy service code
+COPY moderation_service/ ./moderation_service
+
+# Expose API port
+EXPOSE 8002
+
+# Run FastAPI with uvicorn
+CMD ["uvicorn", "moderation_service.main:app", "--host", "0.0.0.0", "--port", "8002"]
+

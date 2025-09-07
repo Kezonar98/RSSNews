@@ -15,6 +15,7 @@ import { fetchNews, fetchCategories, NewsItem } from '../services/api';
 import { usePagination } from '../hooks/usePagination';
 import Layout from '../components/Layout';
 import { SEO } from '../components/SEO';
+import slugify from 'slugify';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -141,11 +142,12 @@ export default function Home() {
           {displayedItems.length > 0 ? (
             displayedItems.map(item => (
               <NewsCard
+                slug={slugify(item.title)} 
                 key={item.id}
                 id={item.id}
                 title={item.title}
                 description={item.categories.join(', ')}
-                {...(item.is_rewritten && { link: `/article/${item.id}` })}
+               {...(item.is_rewritten && { link: `/article/${slugify(item.title)}-${item.id}` })}
               />
             ))
           ) : (

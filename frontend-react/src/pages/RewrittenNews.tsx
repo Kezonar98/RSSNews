@@ -15,10 +15,12 @@ import Layout from '../components/Layout';
 import { SEO } from '../components/SEO';
 
 export default function RewrittenNews() {
-  const { id } = useParams<{ id: string }>();
+  const { slugId } = useParams<{ slugId: string }>();
   const navigate = useNavigate();
 
-  // Responsive wrapper width
+  // Extract Mongo _id (after last "-")
+  const id = slugId?.split('-').pop();
+
   const wrapperMaxW = useBreakpointValue({
     base: '100%',
     md: '85%',
@@ -74,7 +76,8 @@ export default function RewrittenNews() {
     day: 'numeric',
   });
 
-  const url = `https://cosmic-news.example.com/article/${id}`;
+  const slugUrl = `${item.slug}-${item._id}`;
+  const url = `https://cosmic-news.example.com/article/${slugUrl}`;
   const description =
     item.summary ||
     body.split('. ').slice(0, 2).join('. ') ||
@@ -82,7 +85,6 @@ export default function RewrittenNews() {
 
   return (
     <Layout onSearch={handleSearch}>
-      {/* Dynamic SEO meta tags */}
       <SEO
         title={`${title} – Cosmic News`}
         description={description}
@@ -90,7 +92,6 @@ export default function RewrittenNews() {
         image={item.imageUrl}
       />
 
-      {/* Structured data for SEO */}
       <script type="application/ld+json">
         {JSON.stringify({
           '@context': 'https://schema.org',
@@ -118,14 +119,8 @@ export default function RewrittenNews() {
           image: [item.imageUrl],
         })}
       </script>
-      <Container
-        pt={24}
-        pb={16}
-        zIndex={1}
-        maxW="container.xl"
-        px={{ base: 4, md: 6, lg: 8 }}
-      >
-        {/* Article heading */}
+
+      <Container pt={24} pb={16} zIndex={1} maxW="container.xl" px={{ base: 4, md: 6, lg: 8 }}>
         <Stack spacing={2} mb={8} textAlign="center">
           <Heading size="2xl" color="white">
             {title}
@@ -135,7 +130,6 @@ export default function RewrittenNews() {
           </Text>
         </Stack>
 
-        {/* Article content */}
         <Box
           bg="rgba(0, 0, 20, 0.6)"
           border="2px solid transparent"
